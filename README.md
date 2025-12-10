@@ -5,8 +5,7 @@
 * **Step 1:** Change file `.env.example` to `.env`
 
 * **Step 2:** Install Vendor Laravel
-```bash
-`composer install`
+```bash composer install 
 
 
 * **Step 3:** Create generate key
