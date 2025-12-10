@@ -42,30 +42,22 @@ http://localhost:8000/admin/category/index
 
 ---
 
-## Download Tài Liệu
+## Download Tài Liệu (Branch: feature/download-documents)
 
-- Step 1: Sửa database, thêm cột DocumentURL
-
-- Step 2: Trong Product.php, thêm dòng này
-
-```php
-protected $fillable = [..., 'DocumentURL'];
-```
-
-- Step 3: Tạo thư mục lưu file PDF
+- Step 1: Tạo thư mục lưu file PDF
 
 ```
 Tạo thư mục: storage/app/product_documents
 ```
 
-- Step 4: Cập nhật Route
+- Step 2: Cập nhật Route
 
 ```php
 // Route download, nhận ProductID
 Route::get('/product/{id}/download', [ProductController::class, 'downloadFile'])->name('product.download');
 ```
 
-- Step 5: Thêm hàm downloadFile vào ProductController.php
+- Step 3: Thêm hàm downloadFile vào ProductController.php
 
 ```php
 public function downloadFile($id)
@@ -97,7 +89,7 @@ public function downloadFile($id)
 }
 ```
 
-- Step 6: Hiển thị Link trong View
+- Step 4: Hiển thị Link trong View
 
 ```php
 <!-- download -->
@@ -113,7 +105,7 @@ public function downloadFile($id)
 <!-- end download -->
 ```
 
-- Step 7: Thêm import File vào ProductController.php
+- Step 5: Thêm import File vào ProductController.php
 
 ```php
 use Illuminate\Support\Facades\File;
@@ -121,7 +113,7 @@ use Illuminate\Support\Facades\File;
 
 ---
 
-## Captcha
+## Captcha (Branch: feature/captcha)
 
 - Step 1: Cài đặt gói mews/captcha
 
