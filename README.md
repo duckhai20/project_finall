@@ -8,6 +8,7 @@
 
 ```bash
 composer install
+```bash
 
 * **Step 3:** Create generate key
 
