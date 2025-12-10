@@ -6,9 +6,8 @@
 
 * **Step 2:** Install Vendor Laravel
 
-```bash
-composer install
-```bash
+`composer install`
+
 
 * **Step 3:** Create generate key
 
