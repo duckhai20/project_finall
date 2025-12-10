@@ -8,3 +8,20 @@
 
 ```bash
 composer install
+
+* **Step 3:** Create generate key
+
+```bash
+php artisan key:generate
+
+* **Step 4:** Create DB and then check and update information to connect DB in .env
+
+* **Step 5:** Run migrate
+
+```bash
+php artisan migrate
+
+* **Step 6:** Clear cache server
+
+```bash
+php artisan config:cache
