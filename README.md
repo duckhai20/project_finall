@@ -61,7 +61,7 @@ DB_PASSWORD=
 #### Step 6: Create Database and Run Migrations
 ```bash
 # Create database in MySQL
-CREATE DATABASE plastic_store;
+CREATE DATABASE plastic;
 
 # Run migrations
 php artisan migrate
