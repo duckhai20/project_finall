@@ -190,98 +190,196 @@ http://localhost:8000/register
 ```
 Lúc này Captcha image sẽ hiển thị thay cho chữ "captcha"
 
-🤖 Plastic Store AI Chatbot Assistant
-Dự án này là một chatbot thông minh được tích hợp vào website Plastic Store, giúp hỗ trợ khách hàng tìm hiểu về các loại nhựa (PET, PP, PC), tư vấn sản phẩm và giải đáp thắc mắc về kỹ thuật. Hệ thống sử dụng mô hình AI Llama 3.1 thông qua Groq Cloud API.
+Plastic Store - AI Chat Assistant Integration
+📋 Project Overview
+E-commerce website for plastic products with integrated AI Chat Assistant using Groq API.
 
-🚀 Tính năng chính
-Trả lời thời gian thực: AI xử lý và phản hồi nhanh chóng nhờ Groq API.
+🚀 Key Features
+Modern responsive e-commerce layout
 
-Hiệu ứng Typing: Hiệu ứng chữ chạy giúp trải nghiệm trò chuyện tự nhiên hơn.
+AI Chat Assistant using Groq's llama-3.1-8b-instant model
 
-Giao diện thân thiện: Tương thích hoàn hảo với giao diện Bootstrap của Plastic Store.
+Mobile-friendly navigation with SlickNav
 
-Bảo mật: Sử dụng CSRF Token để bảo vệ các yêu cầu từ phía người dùng.
+Product carousels with Owl Carousel
 
-🛠 Công nghệ sử dụng
-Backend: Laravel Framework 11.x
+Bootstrap 4 for responsive design
 
-AI Engine: Groq Cloud API (Model: llama-3.1-8b-instant)
+🔧 Installation & Setup
+1. Clone Repository
+bash
+git clone <repository-url>
+cd plastic-store
+2. Install Dependencies
+bash
+composer install
+3. Environment Configuration
+Copy .env.example to .env:
 
-Frontend: JavaScript (ES6+), jQuery, Bootstrap 4
+bash
+cp .env.example .env
+Update .env file with your Groq API key:
 
-Thư viện bổ trợ: SlickNav (Menu mobile), FontAwesome
+env
+GROQ_API_KEY=your_groq_api_key_here
+Get your API key from Groq Cloud Console.
 
-📋 Hướng dẫn cài đặt
-1. Yêu cầu hệ thống
-PHP >= 8.2
-
-Composer
-
-Tài khoản Groq Cloud để lấy API Key.
-
-2. Cấu hình môi trường (.env)
-Mở file .env trong thư mục gốc và thêm khóa API của bạn vào:
-
-Code snippet
-
-# Groq AI Configuration
-GROQ_API_KEY=gsk_your_actual_api_key_here
-3. Cấu hình Route
-Đảm bảo file routes/web.php đã có định nghĩa cho Chatbot:
-
-PHP
-
-use App\Http\Controllers\ChatController;
-
-Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
-4. Cập nhật hệ thống
-Chạy các lệnh sau để làm sạch bộ nhớ cache và áp dụng cấu hình mới:
-
-Bash
-
+4. Generate Application Key
+bash
+php artisan key:generate
+5. Clear Cache (Required after updates)
+bash
 php artisan config:clear
 php artisan view:clear
-php artisan cache:clear
-📂 Cấu trúc thư mục quan trọng
-app/Http/Controllers/ChatController.php: Xử lý logic kết nối API Groq.
+6. Start Development Server
+bash
+php artisan serve
+Visit: http://localhost:8000
 
-resources/views/chat.blade.php: Giao diện người dùng chatbot.
+📁 File Structure Updates
+Fixed Files:
+1. layouts/app.blade.php (Root layout)
+Added missing SlickNav CSS/JS
 
-resources/views/layouts/app.blade.php: Layout chung tích hợp thư viện.
+Reordered script loading to prevent JavaScript conflicts
 
-public/js/chat.js: Xử lý gửi/nhận tin nhắn không tải lại trang (AJAX).
+Fixed navigation menu hanging issues
 
-⚠️ Lưu ý sửa lỗi thường gặp
-Lỗi Slicknav: Nếu menu mobile không hoạt động, hãy đảm bảo thư viện jquery.slicknav.js được tải trước file main.js trong app.blade.php.
+2. chat.blade.php (AI Chat page)
+Added data-chat-route attribute for proper Laravel route handling
 
-Lỗi CSRF: Luôn đảm bảo có thẻ <meta name="csrf-token"> trong phần <head> của trang web.
+Enhanced UI with suggestion cards
 
-API Timeout: Nếu chatbot báo lỗi kết nối, hãy kiểm tra lại tốc độ mạng hoặc giới hạn (Rate limit) của tài khoản Groq.
+Improved error handling display
 
-👥 Đội ngũ phát triển (Aptech C2411L-NK)
-Khải (Leader)
+3. ChatController.php (Backend logic)
+Optimized error handling for API failures
+
+Added fallback responses when API is unavailable
+
+Improved response formatting with HTML tags
+
+🛠️ Technical Improvements
+JavaScript Fixes
+SlickNav Conflict Resolution: Reordered script loading sequence
+
+Chat.js Compatibility: Added proper route data attribute
+
+Optimized Loading: Ensured dependencies load in correct order
+
+CSS Enhancements
+Added SlickNav mobile menu styles
+
+Maintained responsive design across devices
+
+Fixed chat interface styling
+
+Backend Optimizations
+Error Handling: Graceful API failure responses
+
+Security: CSRF protection and input validation
+
+Performance: Reduced API timeout to 30 seconds
+
+🐛 Bug Fixes Applied
+Fixed: JavaScript SlickNav causing page freeze
+
+Fixed: Missing route attributes in Blade templates
+
+Fixed: Silent API failures in ChatController
+
+Fixed: Mobile navigation issues
+
+📱 Dependencies
+Frontend Libraries:
+jQuery 3.4.1: DOM manipulation
+
+Bootstrap 4.4.1: Responsive framework
+
+Owl Carousel 2.3.4: Product sliders
+
+SlickNav 1.0.10: Mobile navigation
+
+Font Awesome 5.10.0: Icons
+
+Backend Requirements:
+PHP 7.4+
+
+Laravel 8+
+
+Guzzle HTTP: For API requests
+
+🔑 API Configuration
+Groq API Setup:
+Sign up at Groq Cloud
+
+Generate API key from dashboard
+
+Add to .env file:
+
+text
+GROQ_API_KEY=sk-your-api-key-here
+Current Model Configuration:
+Model: llama-3.1-8b-instant
+
+Max Tokens: 500
+
+Temperature: 0.7
+
+System Prompt: Plastic Store product specialist
+
+🧪 Testing the Chat
+Navigate to /chat route
+
+Test with suggested questions:
+
+"What is the difference between PET, PP, and PC materials?"
+
+"Which plastic bottle is suitable for drinking water?"
+
+Verify real-time responses
+
+⚠️ Troubleshooting
+Common Issues:
+Chat not responding:
+
+Check Groq API key in .env
+
+Run cache clear commands
+
+Verify internet connection
+
+Mobile menu not working:
+
+Check console for JavaScript errors
+
+Verify SlickNav script loading order
+
+Slow API responses:
+
+Reduce max_tokens in ChatController
+
+Check Groq API status
+
+Debug Commands:
+bash
+# Check routes
+php artisan route:list
+
+# Clear all caches
+php artisan optimize:clear
+
+# Check .env variables
+php artisan tinker
+>>> env('GROQ_API_KEY')
+📄 License
+This project is open-source and available for educational purposes.
+
+👥 Team Members
+Khai (Team Leader)
 
 Duy
 
-Vũ
+Vu
 
-Tuấn
-
-Dự án này được phát triển cho mục đích học tập và cung cấp giải pháp hỗ trợ khách hàng thực tế cho ngành nhựa.
-
-Cách Import lên GitHub:
-Tạo một repository mới trên GitHub.
-
-Mở terminal tại thư mục dự án của bạn.
-
-Chạy các lệnh sau:
-
-Bash
-
-git init
-git add .
-git commit -m "Add AI Chatbot feature"
-git branch -M main
-git remote add origin <link-github-cua-ban>
-git push -u origin main
+Tuan
