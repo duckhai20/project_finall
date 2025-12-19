@@ -1,159 +1,159 @@
-# Install Source
+# 🏪 Plastic Store - Laravel E-Commerce & AI Chatbot
 
-- Step 1: Change file .env.example to .env
+> Modern e-commerce platform for plastic products with integrated AI chatbot powered by Groq AI.
 
-- Step 2: Install Vendor Laravel
+## 📋 Quick Links
+- [Installation](#-installation)
+- [Configuration](#️-configuration)
+- [Features](#-features)
+- [Troubleshooting](#-troubleshooting)
 
-```
+---
+
+## 🚀 Installation
+
+### Prerequisites
+- PHP >= 7.4 | Composer | MySQL | Node.js (optional)
+
+### Setup Steps
+
+```bash
+# 1. Clone & navigate
+git clone <repository-url>
+cd plastic-store
+
+# 2. Environment setup
+cp .env.example .env
+
+# 3. Install dependencies
 composer install
-```
 
-- Step 3: Create generate key
-
-```
+# 4. Generate app key
 php artisan key:generate
-```
 
-- Step 4: Create DB and then check and update information to connect DB in .env
+# 5. Configure database in .env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_DATABASE=plastic_store
+DB_USERNAME=root
+DB_PASSWORD=
 
-- Step 5: Run migrate
-
-```
+# 6. Create database & migrate
+# CREATE DATABASE plastic_store; (in MySQL)
 php artisan migrate
-```
 
-- Step 6: Clear cache server
-
-```
-php artisan config:cache
-```
-
-- Step 7: Run project
-
-```
+# 7. Clear cache & start
+php artisan config:clear
+php artisan view:clear
 php artisan serve
-```
 
-- Step 8: Go link
-
-```
+# 8. Access application
 http://localhost:8000/admin/category/index
 ```
 
 ---
 
-## Download Tài Liệu (Branch: feature/download-documents)
+## ⚙️ Configuration
 
-- Step 1: Tạo thư mục lưu file PDF
+### Groq AI API (Required for Chatbot)
 
+1. Get API key from [Groq Console](https://console.groq.com)
+2. Add to `.env`:
+```env
+GROQ_API_KEY=your_api_key_here
 ```
-Tạo thư mục: storage/app/product_documents
+3. Clear cache:
+```bash
+php artisan config:clear
+php artisan view:clear
 ```
 
-- Step 2: Cập nhật Route
+⚠️ **Never commit `.env` to GitHub**
 
+---
+
+## ✨ Features
+
+### 1️⃣ Download Documents
+**Branch:** `feature/download-documents`
+
+#### Setup:
+```bash
+# Create storage folder
+mkdir -p storage/app/product_documents
+```
+
+#### Route (routes/web.php):
 ```php
-// Route download, nhận ProductID
-Route::get('/product/{id}/download', [ProductController::class, 'downloadFile'])->name('product.download');
+Route::get('/product/{id}/download', [ProductController::class, 'downloadFile'])
+    ->name('product.download');
 ```
 
-- Step 3: Thêm hàm downloadFile vào ProductController.php
-
+#### Controller Method (ProductController.php):
 ```php
+use Illuminate\Support\Facades\File;
+
 public function downloadFile($id)
 {
-    // 1. Tìm sản phẩm và kiểm tra đường dẫn
     $product = Product::select('ProductID', 'ProductName', 'DocumentURL')
         ->where('ProductID', $id)
         ->firstOrFail();
 
-    $documentUrl = $product->DocumentURL;
-
-    if (!$documentUrl) {
-        abort(404, 'Sản phẩm này không có tài liệu để tải xuống.');
+    if (!$product->DocumentURL) {
+        abort(404, 'No document available');
     }
 
-    // 2. Xây dựng đường dẫn vật lý
-    $filePath = storage_path('app/' . $documentUrl);
-
-    // Đặt tên file tải xuống
+    $filePath = storage_path('app/' . $product->DocumentURL);
     $fileName = $product->ProductName . '_TaiLieuKyThuat.pdf';
 
-    // 3. Kiểm tra file có tồn tại
     if (!File::exists($filePath)) {
-        abort(404, 'File tài liệu không tìm thấy trên server.');
+        abort(404, 'File not found');
     }
 
-    // 4. Trả về Response download
     return response()->download($filePath, $fileName);
 }
 ```
 
-- Step 4: Hiển thị Link trong View
-
-```php
-<!-- download -->
+#### View (blade template):
+```blade
 @if($product->DocumentURL)
-<div class="product__details__action mt-3">
-    <!-- Action Buttons -->
-    <button href="#" class="primary-btn" id="addToCartButton" style="border: none;">THÊM VÀO GIỎ</button>
-    <a href="{{ route('product.download', $product->ProductID) }}" class="primary-btn">
-        <i class="fa fa-download"></i> Tải Tài liệu
-    </a>
-</div>
+<a href="{{ route('product.download', $product->ProductID) }}" class="primary-btn">
+    <i class="fa fa-download"></i> Download Document
+</a>
 @endif
-<!-- end download -->
-```
-
-- Step 5: Thêm import File vào ProductController.php
-
-```php
-use Illuminate\Support\Facades\File;
 ```
 
 ---
 
-## Captcha (Branch: feature/captcha)
+### 2️⃣ CAPTCHA Verification
+**Branch:** `feature/captcha`
 
-- Step 1: Cài đặt gói mews/captcha
-
-```
+#### Install:
+```bash
 composer require mews/captcha
 ```
 
-- Step 2: Nếu gặp lỗi GD Extension
+#### Fix GD Extension (if error):
+```bash
+# Find php.ini location
+php --ini
 
-```
-Chạy: php --ini (xem php.ini ở đâu)
-Mở file php.ini được xác định
-Tìm và xóa dấu chấm phẩy (;) khỏi dòng: ;extension=gd
-Lưu file
-```
+# Open php.ini and uncomment: extension=gd
 
-- Step 3: Kiểm tra GD đã kích hoạt
-
-```
+# Verify GD enabled
 php -m | findstr /i "gd"
 ```
 
-- Step 4: Thử cài đặt lại gói Captcha
-
-```
-composer require mews/captcha
-```
-
-- Step 5: Thêm Captcha vào form Register
-
-```php
+#### Form (register.blade.php):
+```blade
 <div class="form-group">
     <label>Captcha</label>
     <div>{!! captcha_img() !!}</div>
-    <input type="text" class="form-control" name="captcha" placeholder="Nhập mã Captcha" required>
+    <input type="text" class="form-control" name="captcha" placeholder="Enter captcha" required>
 </div>
 ```
 
-- Step 6: Thêm validation trong AuthController
-
+#### Validation (AuthController):
 ```php
 $request->validate([
     'name' => 'required',
@@ -163,231 +163,358 @@ $request->validate([
 ]);
 ```
 
-- Step 7: Khắc phục lỗi Định Tuyến (404)
+#### Fix 404 Routing:
+```bash
+# 1. Edit public/.htaccess
+RewriteEngine On
+RewriteBase /your-project-name/public/
 
-```
-1. Mở file .htaccess trong thư mục public
-2. Thêm dòng RewriteBase:
-   RewriteEngine On
-   RewriteBase /your-project-name/public/
-3. Mở httpd.conf trong XAMPP
-4. Bỏ dấu # khỏi: LoadModule rewrite_module modules/mod_rewrite.so
-5. Restart Apache
-```
+# 2. Enable Apache rewrite_module in httpd.conf
+LoadModule rewrite_module modules/mod_rewrite.so
 
-- Step 8: Xóa cache Laravel
-
-```
+# 3. Clear Laravel cache
 php artisan config:cache
 php artisan cache:clear --store=file
 php artisan view:clear
 ```
 
-- Step 9: Truy cập trang đăng ký
+**Test:** http://localhost:8000/register
 
+---
+
+### 3️⃣ AI Chatbot
+**Technology:** Groq AI (llama-3.1-8b-instant)
+
+#### Structure:
 ```
-http://localhost:8000/register
-```
-Lúc này Captcha image sẽ hiển thị thay cho chữ "captcha"
-
-🧠 AI Chat Assistant – Plastic Store (Laravel)
-📌 Giới thiệu
-
-Dự án này tích hợp AI Chat Assistant vào website Plastic Store sử dụng Laravel + Groq AI API (llama-3.1-8b-instant).
-Chatbot hỗ trợ tư vấn về vật liệu nhựa, sản phẩm, chai nhựa, ứng dụng thực tế, với giao diện thân thiện và xử lý lỗi an toàn.
-
-🛠 Công nghệ sử dụng
-
-Laravel
-
-Blade Template
-
-Groq AI API
-
-Bootstrap 4
-
-jQuery
-
-Owl Carousel
-
-SlickNav
-
-Font Awesome
-
-📂 Cấu trúc các file liên quan
-resources/
- └── views/
-     ├── layouts/
-     │   └── app.blade.php
-     ├── chat.blade.php
-     └── components/
-         ├── header.blade.php
-         └── footer.blade.php
-
-app/
- └── Http/
-     └── Controllers/
-         └── ChatController.php
-
-public/
- ├── css/
- │   ├── style.css
- │   └── chat.css
- └── js/
-     ├── main.js
-     └── chat.js
-
-1️⃣ Layout chính (app.blade.php)
-✔ Những gì đã được thực hiện
-
-Bổ sung SlickNav CSS & JS (tránh lỗi menu mobile)
-
-Sắp xếp lại thứ tự script để tránh lỗi main.js
-
-Tách @yield('styles') và @yield('scripts') rõ ràng
-
-📌 Thư viện được load
-
-Bootstrap 4
-
-Font Awesome
-
-Owl Carousel
-
-SlickNav
-
-CSS & JS custom
-
-👉 File:
-
-resources/views/layouts/app.blade.php
-
-2️⃣ Giao diện Chat (chat.blade.php)
-✔ Những tính năng chính
-
-Hiển thị trạng thái kết nối Groq AI
-
-Quick Questions (click để hỏi nhanh)
-
-Khung chat scroll mượt
-
-Form gửi tin nhắn AI
-
-Truyền route động bằng data-chat-route
-
-<form id="promptForm" data-chat-route="{{ route('chat.send') }}">
-
-
-➡️ Giúp chat.js không hard-code URL, tương thích tốt với Laravel Route.
-
-👉 File:
-
-resources/views/chat.blade.php
-
-3️⃣ Chat Controller (ChatController.php)
-✔ Chức năng chính
-
-Validate input người dùng
-
-Gửi request tới Groq AI API
-
-Xử lý lỗi API an toàn
-
-Trả về phản hồi thân thiện nếu API lỗi
-
-Format Markdown (bold, xuống dòng)
-
-🔹 Model AI
-llama-3.1-8b-instant
-
-🔹 System Prompt
-You are a professional AI assistant for Plastic Store.
-Reply in ENGLISH.
-Use bold text for key terms.
-Refer to members: Khai (Leader), Duy, Vu, Tuan.
-
-
-👉 File:
+resources/views/
+├── layouts/app.blade.php
+├── chat.blade.php
+└── components/
+    ├── header.blade.php
+    └── footer.blade.php
 
 app/Http/Controllers/ChatController.php
 
-4️⃣ Cấu hình bắt buộc (.env)
+public/
+├── css/chat.css
+└── js/chat.js
+```
 
-Thêm API Key của Groq vào file .env:
+#### Layout (resources/views/layouts/app.blade.php):
+```blade
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>@yield('title', 'Plastic Store')</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/SlickNav/1.0.10/slicknav.min.css">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @yield('styles')
+</head>
+<body>
+    @include('components.header')
+    <main>@yield('content')</main>
+    @include('components.footer')
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/SlickNav/1.0.10/jquery.slicknav.min.js"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+    @yield('scripts')
+</body>
+</html>
+```
 
-GROQ_API_KEY=your_api_key_here
+#### Chat View (resources/views/chat.blade.php):
+```blade
+@extends('layouts.app')
 
+@section('title', 'AI Chatbot')
 
-⚠️ Lưu ý
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/chat.css') }}">
+@endsection
 
-Không để khoảng trắng thừa ở cuối dòng
+@section('content')
+<div class="container mt-5">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h3>🤖 AI Assistant</h3>
+            <span class="badge badge-success">Connected</span>
+        </div>
 
-Không commit .env lên GitHub
+        <div id="chatBox" class="chat-box">
+            <div class="chat-message ai-message">
+                <p>👋 Hi! Ask me about plastic materials, products, or anything else!</p>
+            </div>
+        </div>
 
-5️⃣ Lệnh bắt buộc sau khi pull code
+        <div class="quick-questions">
+            <button class="quick-btn" onclick="sendQuickQuestion('What is PET plastic?')">PET Materials</button>
+            <button class="quick-btn" onclick="sendQuickQuestion('What are plastic bottle applications?')">Bottle Uses</button>
+            <button class="quick-btn" onclick="sendQuickQuestion('How can you help me?')">Need Help?</button>
+        </div>
 
-Sau khi clone hoặc pull project, bắt buộc chạy các lệnh sau:
+        <form id="promptForm" data-chat-route="{{ route('chat.send') }}">
+            @csrf
+            <div class="input-group">
+                <input type="text" id="userMessage" name="message" class="form-control" placeholder="Ask a question...">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-paper-plane"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
 
-🔹 Xóa cache cấu hình
-php artisan config:clear
+@section('scripts')
+<script src="{{ asset('js/chat.js') }}"></script>
+@endsection
+```
 
-🔹 Xóa cache view
-php artisan view:clear
+#### Controller (app/Http/Controllers/ChatController.php):
+```php
+<?php
+namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
-➡️ Đảm bảo Laravel nhận đúng GROQ_API_KEY và các thay đổi mới.
+class ChatController extends Controller
+{
+    public function index()
+    {
+        return view('chat');
+    }
 
-🚀 Cách sử dụng
+    public function send(Request $request)
+    {
+        $request->validate(['message' => 'required|string|max:500']);
+        $userMessage = $request->input('message');
 
-Truy cập trang Chat:
+        try {
+            $apiKey = config('services.groq.api_key');
+            
+            if (!$apiKey) {
+                return response()->json([
+                    'reply' => '🤖 API configuration error. Check GROQ_API_KEY.'
+                ]);
+            }
 
-/chat
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json'
+            ])->post('https://api.groq.com/openai/v1/chat/completions', [
+                'model' => 'llama-3.1-8b-instant',
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are a professional AI assistant for Plastic Store. Reply in ENGLISH. Use bold text for key terms. Team: Khai (Leader), Duy, Vu, Tuan.'
+                    ],
+                    ['role' => 'user', 'content' => $userMessage]
+                ],
+                'max_tokens' => 500,
+                'temperature' => 0.7
+            ]);
 
+            if ($response->successful()) {
+                return response()->json([
+                    'reply' => $response->json()['choices'][0]['message']['content']
+                ]);
+            }
 
-Nhập câu hỏi hoặc chọn Quick Questions
+            return response()->json([
+                'reply' => '🤖 Connection error. Please try again.'
+            ]);
 
-AI sẽ phản hồi về:
+        } catch (\Exception $e) {
+            return response()->json([
+                'reply' => '🤖 Error occurred. Please try again or check GROQ_API_KEY.'
+            ]);
+        }
+    }
+}
+```
 
-Vật liệu nhựa (PET, PP, PC…)
+#### Routes (routes/web.php):
+```php
+Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+```
 
-Ứng dụng chai nhựa
+#### JavaScript (public/js/chat.js):
+```javascript
+$(document).ready(function () {
+    const chatRoute = $('#promptForm').data('chat-route');
 
-Sản phẩm Plastic Store
+    $('#promptForm').on('submit', function (e) {
+        e.preventDefault();
+        const message = $('#userMessage').val().trim();
+        if (!message) return;
 
-🛡 Xử lý lỗi API
+        // Show user message
+        $('#chatBox').append(`
+            <div class="chat-message user-message">
+                <p>${escapeHtml(message)}</p>
+            </div>
+        `);
 
-Nếu Groq API gặp sự cố, chatbot sẽ phản hồi:
+        $('#userMessage').val('');
+        $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
 
-🤖 Plastic Store AI:
-Hiện tại tôi đang gặp sự cố kết nối.
-Vui lòng thử lại sau hoặc kiểm tra GROQ_API_KEY.
+        // Send to server
+        $.ajax({
+            url: chatRoute,
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: { message: message },
+            success: function (response) {
+                $('#chatBox').append(`
+                    <div class="chat-message ai-message">
+                        <p>${escapeHtml(response.reply)}</p>
+                    </div>
+                `);
+                $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+            },
+            error: function () {
+                $('#chatBox').append(`
+                    <div class="chat-message ai-message">
+                        <p>🤖 Error. Please try again.</p>
+                    </div>
+                `);
+            }
+        });
+    });
 
-➡️ Tránh tình trạng chatbot im lặng hoặc lỗi trắng trang.
+    function escapeHtml(text) {
+        const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+});
 
-👨‍💻 Thành viên được tham chiếu trong AI
+function sendQuickQuestion(question) {
+    $('#userMessage').val(question);
+    $('#promptForm').submit();
+}
+```
 
-Khai – Leader
+#### Styles (public/css/chat.css):
+```css
+.chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
-Duy
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
 
-Vu
+.chat-box {
+    height: 400px;
+    overflow-y: auto;
+    padding: 20px;
+    background: white;
+}
 
-Tuan
+.chat-message { margin-bottom: 15px; display: flex; }
+.chat-message p { max-width: 70%; padding: 10px 15px; border-radius: 8px; word-wrap: break-word; }
+.user-message { justify-content: flex-end; }
+.user-message p { background: #667eea; color: white; }
+.ai-message p { background: #e9ecef; color: #333; }
 
-📌 Ghi chú
+.quick-questions {
+    padding: 15px 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+}
 
-Dự án phù hợp cho:
+.quick-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s ease;
+}
 
-Đồ án Laravel
+.quick-btn:hover { background: #667eea; color: white; border-color: #667eea; }
 
-Website bán hàng tích hợp AI
+#promptForm { padding: 15px 20px; background: white; border-top: 1px solid #ddd; }
+#promptForm .input-group { display: flex; gap: 10px; }
+#promptForm input { flex: 1; border: 1px solid #ddd; border-radius: 5px; padding: 10px; }
+#promptForm button { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+#promptForm button:hover { background: #764ba2; }
+```
 
-Demo AI Chatbot thực tế
+---
 
-Có thể mở rộng:
+## 🔗 Access Points
 
-Streaming response
+| Feature | URL |
+|---------|-----|
+| Store | http://localhost:8000 |
+| Admin | http://localhost:8000/admin/category/index |
+| Chatbot | http://localhost:8000/chat |
+| Register | http://localhost:8000/register |
 
-Lưu lịch sử chat
+---
 
-Multi-language
+## 🐛 Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| CAPTCHA not showing | Enable GD extension: uncomment `extension=gd` in php.ini |
+| API errors | Verify `GROQ_API_KEY` in .env file |
+| 404 routing errors | Check `.htaccess` in public folder & Apache rewrite module enabled |
+| Cache issues | Run `php artisan config:clear && php artisan view:clear` |
+| Blank chatbot | Check browser console for errors, verify GROQ_API_KEY |
+
+---
+
+## 👥 Team
+
+| Name | Role |
+|------|------|
+| Khai | 👨‍💼 Leader |
+| Duy | 💻 Developer |
+| Vu | 💻 Developer |
+| Tuan | 💻 Developer |
+
+---
+
+## ⚡ Tech Stack
+
+Laravel • PHP • Bootstrap 4 • jQuery • Groq AI • MySQL
+
+---
+
+## 📝 Notes
+
+✅ Clear cache after pulling new changes  
+✅ Never commit `.env` to GitHub  
+✅ Keep `GROQ_API_KEY` secure  
+✅ Test features on separate branches before merging
+
+**Need help? Check troubleshooting section or open an issue on GitHub!** 🚀
