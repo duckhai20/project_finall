@@ -189,3 +189,99 @@ php artisan view:clear
 http://localhost:8000/register
 ```
 Lúc này Captcha image sẽ hiển thị thay cho chữ "captcha"
+
+🤖 Plastic Store AI Chatbot Assistant
+Dự án này là một chatbot thông minh được tích hợp vào website Plastic Store, giúp hỗ trợ khách hàng tìm hiểu về các loại nhựa (PET, PP, PC), tư vấn sản phẩm và giải đáp thắc mắc về kỹ thuật. Hệ thống sử dụng mô hình AI Llama 3.1 thông qua Groq Cloud API.
+
+🚀 Tính năng chính
+Trả lời thời gian thực: AI xử lý và phản hồi nhanh chóng nhờ Groq API.
+
+Hiệu ứng Typing: Hiệu ứng chữ chạy giúp trải nghiệm trò chuyện tự nhiên hơn.
+
+Giao diện thân thiện: Tương thích hoàn hảo với giao diện Bootstrap của Plastic Store.
+
+Bảo mật: Sử dụng CSRF Token để bảo vệ các yêu cầu từ phía người dùng.
+
+🛠 Công nghệ sử dụng
+Backend: Laravel Framework 11.x
+
+AI Engine: Groq Cloud API (Model: llama-3.1-8b-instant)
+
+Frontend: JavaScript (ES6+), jQuery, Bootstrap 4
+
+Thư viện bổ trợ: SlickNav (Menu mobile), FontAwesome
+
+📋 Hướng dẫn cài đặt
+1. Yêu cầu hệ thống
+PHP >= 8.2
+
+Composer
+
+Tài khoản Groq Cloud để lấy API Key.
+
+2. Cấu hình môi trường (.env)
+Mở file .env trong thư mục gốc và thêm khóa API của bạn vào:
+
+Code snippet
+
+# Groq AI Configuration
+GROQ_API_KEY=gsk_your_actual_api_key_here
+3. Cấu hình Route
+Đảm bảo file routes/web.php đã có định nghĩa cho Chatbot:
+
+PHP
+
+use App\Http\Controllers\ChatController;
+
+Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+4. Cập nhật hệ thống
+Chạy các lệnh sau để làm sạch bộ nhớ cache và áp dụng cấu hình mới:
+
+Bash
+
+php artisan config:clear
+php artisan view:clear
+php artisan cache:clear
+📂 Cấu trúc thư mục quan trọng
+app/Http/Controllers/ChatController.php: Xử lý logic kết nối API Groq.
+
+resources/views/chat.blade.php: Giao diện người dùng chatbot.
+
+resources/views/layouts/app.blade.php: Layout chung tích hợp thư viện.
+
+public/js/chat.js: Xử lý gửi/nhận tin nhắn không tải lại trang (AJAX).
+
+⚠️ Lưu ý sửa lỗi thường gặp
+Lỗi Slicknav: Nếu menu mobile không hoạt động, hãy đảm bảo thư viện jquery.slicknav.js được tải trước file main.js trong app.blade.php.
+
+Lỗi CSRF: Luôn đảm bảo có thẻ <meta name="csrf-token"> trong phần <head> của trang web.
+
+API Timeout: Nếu chatbot báo lỗi kết nối, hãy kiểm tra lại tốc độ mạng hoặc giới hạn (Rate limit) của tài khoản Groq.
+
+👥 Đội ngũ phát triển (Aptech C2411L-NK)
+Khải (Leader)
+
+Duy
+
+Vũ
+
+Tuấn
+
+Dự án này được phát triển cho mục đích học tập và cung cấp giải pháp hỗ trợ khách hàng thực tế cho ngành nhựa.
+
+Cách Import lên GitHub:
+Tạo một repository mới trên GitHub.
+
+Mở terminal tại thư mục dự án của bạn.
+
+Chạy các lệnh sau:
+
+Bash
+
+git init
+git add .
+git commit -m "Add AI Chatbot feature"
+git branch -M main
+git remote add origin <link-github-cua-ban>
+git push -u origin main
