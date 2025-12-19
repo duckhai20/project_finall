@@ -190,196 +190,204 @@ http://localhost:8000/register
 ```
 Lúc này Captcha image sẽ hiển thị thay cho chữ "captcha"
 
-Plastic Store - AI Chat Assistant Integration
-📋 Project Overview
-E-commerce website for plastic products with integrated AI Chat Assistant using Groq API.
+🧠 AI Chat Assistant – Plastic Store (Laravel)
+📌 Giới thiệu
 
-🚀 Key Features
-Modern responsive e-commerce layout
+Dự án này tích hợp AI Chat Assistant vào website Plastic Store sử dụng Laravel + Groq AI API (llama-3.1-8b-instant).
+Chatbot hỗ trợ tư vấn về vật liệu nhựa, sản phẩm, chai nhựa, ứng dụng thực tế, với giao diện thân thiện và xử lý lỗi an toàn.
 
-AI Chat Assistant using Groq's llama-3.1-8b-instant model
+🛠 Công nghệ sử dụng
 
-Mobile-friendly navigation with SlickNav
+Laravel
 
-Product carousels with Owl Carousel
+Blade Template
 
-Bootstrap 4 for responsive design
+Groq AI API
 
-🔧 Installation & Setup
-1. Clone Repository
-bash
-git clone <repository-url>
-cd plastic-store
-2. Install Dependencies
-bash
-composer install
-3. Environment Configuration
-Copy .env.example to .env:
+Bootstrap 4
 
-bash
-cp .env.example .env
-Update .env file with your Groq API key:
+jQuery
 
-env
-GROQ_API_KEY=your_groq_api_key_here
-Get your API key from Groq Cloud Console.
+Owl Carousel
 
-4. Generate Application Key
-bash
-php artisan key:generate
-5. Clear Cache (Required after updates)
-bash
+SlickNav
+
+Font Awesome
+
+📂 Cấu trúc các file liên quan
+resources/
+ └── views/
+     ├── layouts/
+     │   └── app.blade.php
+     ├── chat.blade.php
+     └── components/
+         ├── header.blade.php
+         └── footer.blade.php
+
+app/
+ └── Http/
+     └── Controllers/
+         └── ChatController.php
+
+public/
+ ├── css/
+ │   ├── style.css
+ │   └── chat.css
+ └── js/
+     ├── main.js
+     └── chat.js
+
+1️⃣ Layout chính (app.blade.php)
+✔ Những gì đã được thực hiện
+
+Bổ sung SlickNav CSS & JS (tránh lỗi menu mobile)
+
+Sắp xếp lại thứ tự script để tránh lỗi main.js
+
+Tách @yield('styles') và @yield('scripts') rõ ràng
+
+📌 Thư viện được load
+
+Bootstrap 4
+
+Font Awesome
+
+Owl Carousel
+
+SlickNav
+
+CSS & JS custom
+
+👉 File:
+
+resources/views/layouts/app.blade.php
+
+2️⃣ Giao diện Chat (chat.blade.php)
+✔ Những tính năng chính
+
+Hiển thị trạng thái kết nối Groq AI
+
+Quick Questions (click để hỏi nhanh)
+
+Khung chat scroll mượt
+
+Form gửi tin nhắn AI
+
+Truyền route động bằng data-chat-route
+
+<form id="promptForm" data-chat-route="{{ route('chat.send') }}">
+
+
+➡️ Giúp chat.js không hard-code URL, tương thích tốt với Laravel Route.
+
+👉 File:
+
+resources/views/chat.blade.php
+
+3️⃣ Chat Controller (ChatController.php)
+✔ Chức năng chính
+
+Validate input người dùng
+
+Gửi request tới Groq AI API
+
+Xử lý lỗi API an toàn
+
+Trả về phản hồi thân thiện nếu API lỗi
+
+Format Markdown (bold, xuống dòng)
+
+🔹 Model AI
+llama-3.1-8b-instant
+
+🔹 System Prompt
+You are a professional AI assistant for Plastic Store.
+Reply in ENGLISH.
+Use bold text for key terms.
+Refer to members: Khai (Leader), Duy, Vu, Tuan.
+
+
+👉 File:
+
+app/Http/Controllers/ChatController.php
+
+4️⃣ Cấu hình bắt buộc (.env)
+
+Thêm API Key của Groq vào file .env:
+
+GROQ_API_KEY=your_api_key_here
+
+
+⚠️ Lưu ý
+
+Không để khoảng trắng thừa ở cuối dòng
+
+Không commit .env lên GitHub
+
+5️⃣ Lệnh bắt buộc sau khi pull code
+
+Sau khi clone hoặc pull project, bắt buộc chạy các lệnh sau:
+
+🔹 Xóa cache cấu hình
 php artisan config:clear
+
+🔹 Xóa cache view
 php artisan view:clear
-6. Start Development Server
-bash
-php artisan serve
-Visit: http://localhost:8000
 
-📁 File Structure Updates
-Fixed Files:
-1. layouts/app.blade.php (Root layout)
-Added missing SlickNav CSS/JS
 
-Reordered script loading to prevent JavaScript conflicts
+➡️ Đảm bảo Laravel nhận đúng GROQ_API_KEY và các thay đổi mới.
 
-Fixed navigation menu hanging issues
+🚀 Cách sử dụng
 
-2. chat.blade.php (AI Chat page)
-Added data-chat-route attribute for proper Laravel route handling
+Truy cập trang Chat:
 
-Enhanced UI with suggestion cards
+/chat
 
-Improved error handling display
 
-3. ChatController.php (Backend logic)
-Optimized error handling for API failures
+Nhập câu hỏi hoặc chọn Quick Questions
 
-Added fallback responses when API is unavailable
+AI sẽ phản hồi về:
 
-Improved response formatting with HTML tags
+Vật liệu nhựa (PET, PP, PC…)
 
-🛠️ Technical Improvements
-JavaScript Fixes
-SlickNav Conflict Resolution: Reordered script loading sequence
+Ứng dụng chai nhựa
 
-Chat.js Compatibility: Added proper route data attribute
+Sản phẩm Plastic Store
 
-Optimized Loading: Ensured dependencies load in correct order
+🛡 Xử lý lỗi API
 
-CSS Enhancements
-Added SlickNav mobile menu styles
+Nếu Groq API gặp sự cố, chatbot sẽ phản hồi:
 
-Maintained responsive design across devices
+🤖 Plastic Store AI:
+Hiện tại tôi đang gặp sự cố kết nối.
+Vui lòng thử lại sau hoặc kiểm tra GROQ_API_KEY.
 
-Fixed chat interface styling
+➡️ Tránh tình trạng chatbot im lặng hoặc lỗi trắng trang.
 
-Backend Optimizations
-Error Handling: Graceful API failure responses
+👨‍💻 Thành viên được tham chiếu trong AI
 
-Security: CSRF protection and input validation
-
-Performance: Reduced API timeout to 30 seconds
-
-🐛 Bug Fixes Applied
-Fixed: JavaScript SlickNav causing page freeze
-
-Fixed: Missing route attributes in Blade templates
-
-Fixed: Silent API failures in ChatController
-
-Fixed: Mobile navigation issues
-
-📱 Dependencies
-Frontend Libraries:
-jQuery 3.4.1: DOM manipulation
-
-Bootstrap 4.4.1: Responsive framework
-
-Owl Carousel 2.3.4: Product sliders
-
-SlickNav 1.0.10: Mobile navigation
-
-Font Awesome 5.10.0: Icons
-
-Backend Requirements:
-PHP 7.4+
-
-Laravel 8+
-
-Guzzle HTTP: For API requests
-
-🔑 API Configuration
-Groq API Setup:
-Sign up at Groq Cloud
-
-Generate API key from dashboard
-
-Add to .env file:
-
-text
-GROQ_API_KEY=sk-your-api-key-here
-Current Model Configuration:
-Model: llama-3.1-8b-instant
-
-Max Tokens: 500
-
-Temperature: 0.7
-
-System Prompt: Plastic Store product specialist
-
-🧪 Testing the Chat
-Navigate to /chat route
-
-Test with suggested questions:
-
-"What is the difference between PET, PP, and PC materials?"
-
-"Which plastic bottle is suitable for drinking water?"
-
-Verify real-time responses
-
-⚠️ Troubleshooting
-Common Issues:
-Chat not responding:
-
-Check Groq API key in .env
-
-Run cache clear commands
-
-Verify internet connection
-
-Mobile menu not working:
-
-Check console for JavaScript errors
-
-Verify SlickNav script loading order
-
-Slow API responses:
-
-Reduce max_tokens in ChatController
-
-Check Groq API status
-
-Debug Commands:
-bash
-# Check routes
-php artisan route:list
-
-# Clear all caches
-php artisan optimize:clear
-
-# Check .env variables
-php artisan tinker
->>> env('GROQ_API_KEY')
-📄 License
-This project is open-source and available for educational purposes.
-
-👥 Team Members
-Khai (Team Leader)
+Khai – Leader
 
 Duy
 
 Vu
 
 Tuan
+
+📌 Ghi chú
+
+Dự án phù hợp cho:
+
+Đồ án Laravel
+
+Website bán hàng tích hợp AI
+
+Demo AI Chatbot thực tế
+
+Có thể mở rộng:
+
+Streaming response
+
+Lưu lịch sử chat
+
+Multi-language
